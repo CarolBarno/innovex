@@ -14,12 +14,14 @@ import com.innovex.Innovex.utilities.utility.Pager;
 import io.swagger.annotations.Api;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api")
 @Component
+@EnableScheduling
 public class TasksController {
 
     @Autowired
@@ -77,23 +80,73 @@ public class TasksController {
         //program time
         SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss");
 
+        LocalTime pt = LocalTime.parse("12:00:00").plus(get(), ChronoUnit.SECONDS);
+        LocalTime at = LocalTime.parse("10:00:00").plus(getA(), ChronoUnit.SECONDS);
+
         tasks.setEvent(Event.START);
+
         tasks.setServers(result);
+
         tasks.setRunningServers(running);
+
         tasks.setColor(colorCode);
-        tasks.setMessage("Start " + result + " servers");
-        tasks.setProgramTime(dateFormatter.format(new Date()));
-        tasks.setActualTime(dateFormatter.format(new Date()));
+
+        tasks.setMessage(
+                "Start " + result + " servers");
+        tasks.setProgramTime(
+                (pt.toString()));
+        tasks.setActualTime(at.toString());
 
         Tasks save = tasksService.saveTasks(tasks);
 
-        System.out.println("task is " + save);
+        System.out.println(
+                "task is " + save);
         Pager<TasksData> pager = new Pager();
-        pager.setCode("0");
-        pager.setMessage("Start task details have successfully been saved");
+
+        pager.setCode(
+                "0");
+        pager.setMessage(
+                "Start task details have successfully been saved");
         pager.setContent(TasksData.map(save));
 
 //        return ResponseEntity.status(HttpStatus.CREATED).body(pager);
+    }
+
+    public static int count;
+    public static int count1;
+    public static int count2;
+    public static int count3;
+    public static int count4;
+    public static int count5;
+
+    public int get() {
+        count = count + 30;
+        return count;
+    }
+
+    public int getA() {
+        count1 = count1 + 30;
+        return count1;
+    }
+
+    public int get1() {
+        count2 = count2 + 40;
+        return count2;
+    }
+
+    public int get1A() {
+        count3 = count3 + 40;
+        return count3;
+    }
+
+    public int get2() {
+        count4 = count4 + 50;
+        return count4;
+    }
+
+    public int get2A() {
+        count5 = count5 + 50;
+        return count5;
     }
 
     @Scheduled(initialDelay = 40000, fixedRate = 40000)
@@ -131,13 +184,16 @@ public class TasksController {
         //program time
         SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss");
 
+        LocalTime pt = LocalTime.parse("12:00:00").plus(get1(), ChronoUnit.SECONDS);
+        LocalTime at = LocalTime.parse("10:00:00").plus(get1A(), ChronoUnit.SECONDS);
+
         tasks.setEvent(Event.STOP);
         tasks.setServers(result);
         tasks.setRunningServers(running);
         tasks.setColor(colorCode);
         tasks.setMessage("Stop " + result + " servers");
-        tasks.setProgramTime(dateFormatter.format(new Date()));
-        tasks.setActualTime(dateFormatter.format(new Date()));
+        tasks.setProgramTime(pt.toString());
+        tasks.setActualTime(at.toString());
 
         Tasks save = tasksService.saveTasks(tasks);
 
@@ -175,13 +231,16 @@ public class TasksController {
         //program time
         SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss");
 
+        LocalTime pt = LocalTime.parse("12:00:00").plus(get2(), ChronoUnit.SECONDS);
+        LocalTime at = LocalTime.parse("10:00:00").plus(get2A(), ChronoUnit.SECONDS);
+
         tasks.setEvent(Event.REPORT);
         tasks.setServers(running);
         tasks.setRunningServers(running);
         tasks.setColor(colorCode);
         tasks.setMessage("Report " + running + " servers running");
-        tasks.setProgramTime(dateFormatter.format(new Date()));
-        tasks.setActualTime(dateFormatter.format(new Date()));
+        tasks.setProgramTime(pt.toString());
+        tasks.setActualTime(at.toString());
 
         Tasks save = tasksService.saveTasks(tasks);
 
